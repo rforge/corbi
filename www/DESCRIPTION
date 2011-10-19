@@ -1,0 +1,13 @@
+Package: Corbi
+Version: 0.1-2
+Date: 2011-10-14
+Title: Corbi - A collection of bioinformatics tools
+Author: Ling-Yun Wu <wulingyun@gmail.com>
+Author@R: c(person("Ling-Yun", "Wu", email = "wulingyun@gmail.com"),
+        person("Qiang", "Huang", email = "hq04405114@gmail.com"))
+Maintainer: Ling-Yun Wu <wulingyun@gmail.com>
+Depends: R (>= 2.12.0), CRF (>= 0.1-4)
+Description: Bioinformatics tools developed by APORC
+License: GPL (>= 2)
+Built: R 2.13.2; i386-pc-mingw32; 2011-10-19 08:33:44 UTC; windows
+Archs: i386, x64
