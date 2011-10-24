@@ -1,10 +1,10 @@
-net.query <- function(query.net, target.net, node.sim, query.type=2, delta.d=1e-10, delta.c=0.5, delta.e=1, delta.s=1, output="result.txt")
+net.query <- function(query.net, target.net, node.sim, query.type=1, delta.d=1e-10, delta.c=0.5, delta.e=1, delta.s=1, output="result.txt")
 {
 # options
 #   query.net: input file name of query network
 #   target.net: input file name of target network
 #   node.sim: input file name of node similarity
-#   query.type: the type of query network, 0 - chain, 1 - tree, 2 - general
+#   query.type: the type of query network, 1 - general, 2 - chain, 3 - tree
 #   delta: the parameters \Delta_d, \Delta_c, \Delta_e, \Delta_s
 #   output: the output filename
 
@@ -15,7 +15,8 @@ net.query <- function(query.net, target.net, node.sim, query.type=2, delta.d=1e-
 #   query$node: the node names of query network
 #   query$matrix: the adjacency matrix of query network
 
-	delta <- list(d=delta.d, c=delta.c, e=delta.e, s=delta.s)
+	query.type <- as.numeric(query.type)
+	delta <- lapply(list(d=delta.d, c=delta.c, e=delta.e, s=delta.s), as.numeric)
 	target <- read.net(target.net)
 	target$sim <- read.sim(node.sim)
 
@@ -38,7 +39,8 @@ net.query <- function(query.net, target.net, node.sim, query.type=2, delta.d=1e-
 
 net.query.batch <- function(query.nets, target.net, node.sim, query.type=2, delta.d=1e-10, delta.c=0.5, delta.e=1, delta.s=1, output="result.txt")
 {
-	delta <- list(d=delta.d, c=delta.c, e=delta.e, s=delta.s)
+	query.type <- as.numeric(query.type)
+	delta <- lapply(list(d=delta.d, c=delta.c, e=delta.e, s=delta.s), as.numeric)
 	target <- read.net(target.net)
 	target$sim <- read.sim(node.sim)
 	target$dist <- .Call("NQ_ShortestDistances", target$matrix, rep(T, target$size))
@@ -151,25 +153,17 @@ build.model <- function(query, label, delta)
 
 solve.crf <- function(model, query.type)
 {
-	if (query.type == 0)
-	{
-		result <- decode.chain(model)
-	}
-	if (query.type == 1)
-	{
-		result <- decode.tree(model)
-	}
-	if (query.type == 2)
-	{
-		result <- decode.lbp(model)
-	}
-	result
+	decode.method <- list(decode.lbp, decode.chain, decode.tree)
+	if (!is.numeric(query.type) || query.type > 3 || query.type < 1) query.type = 1
+	decode.method[[query.type]](model)
 }
 
 write.result <- function(query, label, model, result, filename="result.txt")
 {
 	query.name <- query$node
 	label.name <- c(label$node, "gap")
+	label.dist <- matrix("gap", nrow=label$size+1, ncol=label$size+1)
+	label.dist[1:label$size, 1:label$size] <- label$dist
 
 	con <- file(as.character(filename), "w")
 	writeLines("node match:", con, sep="\n")
@@ -179,6 +173,7 @@ write.result <- function(query, label, model, result, filename="result.txt")
 	}
 	writeLines("", con, sep="\n")
 
+	direction <- c("--->", "<---", "----")
 	writeLines("edge match:", con, sep="\n")
 	for (i in 1:model$n.edges)
 	{
@@ -186,14 +181,9 @@ write.result <- function(query, label, model, result, filename="result.txt")
 		x2 <- model$edges[i,2]
 		y1 <- result[x1]
 		y2 <- result[x2]
-		if (y1 > label$size || y2 > label$size)
-		{
-			writeLines(paste(query.name[x1], "--", query.name[x2], "\t", label.name[y1], "--", label.name[y2], "\tgap"), con, sep="\n")
-		}
-		else
-		{
-			writeLines(paste(query.name[x1], "--", query.name[x2], "\t", label.name[y1], "--", label.name[y2], "\t", label$dist[y1, y2]), con, sep="\n")
-		}
+		distance <- c(label.dist[y1,y2], label.dist[y2,y1], min(label.dist[y1,y2], label.dist[y2,y1]))
+		d <- (query$matrix[x1,x2] > 0) + 2 * (query$matrix[x2,x1] > 0)
+		writeLines(paste(query.name[x1], direction[d], query.name[x2], "\t", label.name[y1], direction[d], label.name[y2], "\t", distance[d]), con, sep="\n")
 	}
 	close(con)
 }
