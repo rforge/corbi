@@ -45,6 +45,12 @@ echo $contents; } ?>
 
 <p> <strong>Reference manual:</strong> <a href="html/00Index.html">HTML</a>, <a href="pdf/Corbi.pdf">PDF</a>. </p>
 
+<p> The following package is used: </p>
+
+<ul>
+	<li><a href="http://crf.r-forge.r-project.org">CRF</a></li>
+</ul>
+
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
 </body>
