@@ -18,10 +18,10 @@ based on the conditional random fields (CRF) model.</p>
 <h3>Usage</h3>
 
 <pre>
-net.query(query.net, target.net, node.sim, query.type=2,
+net.query(query.net, target.net, node.sim, query.type=1,
 	delta.d=1e-10, delta.c=0.5, delta.e=1, delta.s=1,
 	output="result.txt")
-net.query.batch(query.nets, target.net, node.sim, query.type=2,
+net.query.batch(query.nets, target.net, node.sim, query.type=1,
 	delta.d=1e-10, delta.c=0.5, delta.e=1, delta.s=1,
 	output="result.txt")
 </pre>
@@ -49,7 +49,7 @@ net.query.batch(query.nets, target.net, node.sim, query.type=2,
 </td></tr>
 <tr valign="top"><td><code>query.type</code></td>
 <td>
-<p>The querying network type: 0 - chain, 1 - tree, 2 - general.</p>
+<p>The querying network type: 1 - general, 2 - chain, 3 - tree.</p>
 </td></tr>
 <tr valign="top"><td><code>delta.d</code></td>
 <td>
@@ -81,7 +81,7 @@ net.query.batch(query.nets, target.net, node.sim, query.type=2,
 model which can handle both undirected and directed networks, acyclic and cyclic networks,
 and any number of insertions/deletions.
 </p>
-<p>When querying several networks in the same target network, net.query.batch will save much time.
+<p>When querying several networks in the same target network, <code><a href="netquery.html">net.query.batch</a></code> will save much time.
 </p>
 
 <ul>
@@ -105,9 +105,9 @@ v1 is the node from the query network, V1 is the node from the target network,
 s1 is the similarity score between the node v1 and V1, and so on.
 </p>
 </li>
-<li><p> query.type: If the query is a chain, we set query.type = 0. If the query is a tree,
-we set query.type = 1. If the query is a general graph with loops, we set query.type = 2.
-The default value is 2.
+<li><p> query.type: If the query is a general graph with loops, we set query.type = 1.
+If the query is a chain, we set query.type = 2. If the query is a tree,
+we set query.type = 3. The default value is 1.
 </p>
 </li>
 <li><p> delta.d:  The smaller delta.d is, the heavier penalty for deletions. 
@@ -139,12 +139,12 @@ library(Corbi)
 
 ## An example: "quenet.txt", "tarnet.txt", "queblast.txt" are 
 ## three input files in the working directory
-net.query("quenet.txt", "tarnet.txt", "queblast.txt", query.type=1)
+net.query("quenet.txt", "tarnet.txt", "queblast.txt", query.type=3)
 
 ## Batch example
 net.query.batch(c("quenet.txt", "quenet2.txt", "quenet3.txt"),
-	"tarnet.txt", "queblast.txt", query.type=1)
+	"tarnet.txt", "queblast.txt", query.type=3)
 </pre>
 
-<hr><div align="center">[Package <em>Corbi</em> version 0.1-2 <a href="00Index.html">Index</a>]</div>
+<hr><div align="center">[Package <em>Corbi</em> version 0.2-1 <a href="00Index.html">Index</a>]</div>
 </body></html>
