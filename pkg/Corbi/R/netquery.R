@@ -58,10 +58,10 @@ net.query.batch <- function(query.nets, target.net, node.sim, query.type=1, delt
 read.net <- function(net)
 {
 	net.text <- as.matrix(read.table(net, fill=T, as.is=T, col.names=1:max(count.fields(net))))
-	net.node <- unique(as.vector(net.text))
+	net.node <- unique(as.character(net.text))
 	net.node <- net.node[net.node != ""]
 	net.size <- length(net.node)
-	net.edge <- cbind(net.text[,1], as.vector(net.text[,-1]))
+	net.edge <- cbind(as.character(net.text[,1]), as.character(net.text[,-1]))
 	net.edge <- net.edge[net.edge[,2] != "", ]
 	net.matrix <- matrix(0, net.size, net.size, dimnames=list(net.node, net.node))
 	net.matrix[net.edge] <- 1
@@ -71,12 +71,12 @@ read.net <- function(net)
 read.sim <- function(sim)
 {
 	sim.text <- read.table(sim, as.is=T)
-	sim.node1 <- unique(as.vector(sim.text[,1]))
-	sim.node2 <- unique(as.vector(sim.text[,2]))
+	sim.node1 <- unique(as.character(sim.text[,1]))
+	sim.node2 <- unique(as.character(sim.text[,2]))
 	sim.size1 <- length(sim.node1)
 	sim.size2 <- length(sim.node2)
 	sim.matrix <- matrix(0, sim.size1, sim.size2, dimnames=list(sim.node1, sim.node2))
-	sim.matrix[as.matrix(sim.text[,1:2])] <- sim.text[,3]
+	sim.matrix[cbind(as.character(sim.text[,1]),as.character(sim.text[,2]))] <- sim.text[,3]
 	sim.matrix
 }
 
