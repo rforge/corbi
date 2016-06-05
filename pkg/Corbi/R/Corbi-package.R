@@ -1,0 +1,30 @@
+#' Corbi - Bioinformatics analysis tools
+#' 
+#' This pakcage provides a bundle of bioinformatics analysis tools for biomedical research.
+#'
+#' This is a collection of bioinformatics analysis tools developed by WuLab at Academy of Mathematics
+#' and Systems Science, Chinese Academy of Sciences.
+#' 
+#' Network comparison:
+#' \itemize{
+#'   \item \code{\link{net_query}} Network querying method based on conditional random fields
+#'   \item \code{\link{net_query_batch}} Batch processing version of \code{\link{net_query}}
+#'   \item \code{\link{net_align}} Network alignment method based on conditional random fields
+#' }
+#' 
+#' 
+#' @name Corbi-package
+#' @aliases Corbi-package Corbi
+#' @docType package
+#' @keywords package
+#' 
+#' @references Qiang Huang, Ling-Yun Wu, and Xiang-Sun Zhang. An Efficient
+#' Network Querying Method Based on Conditional Random Fields. Bioinformatics,
+#' 27(22):3173-3178, 2011.  
+#' @references Qiang Huang, Ling-Yun Wu, and Xiang-Sun Zhang. Corbi: A new
+#' R package for biological network alignment and querying. BMC Systems Biology,
+#' 7(Suppl 2):S6, 2013.
+#' 
+#' @useDynLib Corbi, .registration = TRUE
+#' 
+NULL
