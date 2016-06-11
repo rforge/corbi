@@ -43,15 +43,13 @@ echo $contents; } ?>
 
 <!-- end of project description -->
 
-<p> <strong>Reference manual:</strong> <a href="html/00Index.html">HTML</a>, <a href="pdf/Corbi.pdf">PDF</a>. </p>
+<p> <strong>Homepage:</strong> <a href="https://bitbucket.org/wulingyun/corbi">https://bitbucket.org/wulingyun/corbi</a>. </p>
 
-<p> The following package is used: </p>
+<p> <strong>Stable version:</strong> <a href="https://cran.r-project.org/web/packages/Corbi/">CRAN</a>, 
+<a href="http://r-forge.r-project.org/projects/corbi/">R-Forge</a>. </p>
 
-<ul>
-	<li><a href="http://crf.r-forge.r-project.org">CRF</a></li>
-</ul>
+<p> <strong>Latest beta version:</strong> <a href="https://bitbucket.org/wulingyun/corbi/src">Bitbucket</a>. </p>
 
-<p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
 </body>
 </html>
