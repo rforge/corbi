@@ -83,25 +83,25 @@ net_align <- function(query.net, target.net, node.sim, query.type=4, delta.d=1e-
 		# and simplify the target network
 		# build and solve CRF model
 
-		label <- simplify_target(query, target, delta)
-		model <- build_model(query, label, delta)
-		result <- solve_crf(model, query.type)
+		label <- .net_query.simplify_target(query, target, delta)
+		model <- .net_query.build_model(query, label, delta)
+		result <- .net_query.solve_crf(model, query.type)
 	
 		# change the target subnet as query network 
 
-		modelchange <- target_part(label,result,target,query)
+		modelchange <- .net_align.target_part(label,result,target,query)
 		targetpart <- modelchange$target
 		query$sim <- modelchange$sim
 		 
 
 	## target part --> query
 
-		label1 <- simplify_target( targetpart, query, delta)
-		model1 <- build_model(targetpart, label1, delta)
-		result1 <- solve_crf(model1, query.type)
+		label1 <- .net_query.simplify_target( targetpart, query, delta)
+		model1 <- .net_query.build_model(targetpart, label1, delta)
+		result1 <- .net_query.solve_crf(model1, query.type)
 
 		# update the common match pairs
-		hitcom <- match_com(label,result,label1,result1)
+		hitcom <- .net_align.match_com(label,result,label1,result1)
 		
 
 	## given the stop rule
@@ -122,7 +122,7 @@ net_align <- function(query.net, target.net, node.sim, query.type=4, delta.d=1e-
 
 	## update
 		# the node similarity matrix
-		newtarget <- update_sim(hitcom,target,query)
+		newtarget <- .net_align.update_sim(hitcom,target,query)
 		target$sim <- newtarget$sim
 
 		k=k+1;
@@ -130,11 +130,11 @@ net_align <- function(query.net, target.net, node.sim, query.type=4, delta.d=1e-
 	}
 	
 	# write unique corresponding list
-	write_result1(query, target0, label, model, result, paste(query.net, output, sep="_"))  
+	.net_align.write_result(query, target0, label, model, result, paste(query.net, output, sep="_"))  
 
 }
 
-target_part <- function(label,result,target0,query){
+.net_align.target_part <- function(label,result,target0,query){
 
 	sub <- result<=label$size
 	node <- label$node[unique(result[sub])]
@@ -151,7 +151,7 @@ target_part <- function(label,result,target0,query){
 	list(target=target,sim=sim)
 }
 
-match_com <- function(label,result,label1,result1)
+.net_align.match_com <- function(label,result,label1,result1)
 {
 	nodetarget <- label$node[result[result<=label$size]]
 	nodequery <- rownames(label$sim)[result<=label$size]
@@ -168,7 +168,7 @@ match_com <- function(label,result,label1,result1)
 	hitcom
 }
 
-update_sim <- function (hitcom,target,query)
+.net_align.update_sim <- function (hitcom,target,query)
 {
 	# update sim
 	sim <- target$sim
@@ -179,7 +179,7 @@ update_sim <- function (hitcom,target,query)
 	list(sim=sim)
 }
 
-uni <- function(pairs)
+.net_align.uni <- function(pairs)
 {
 	# first, remove the gap
 	pairs <- pairs[pairs[,2]!="gap",]
@@ -195,7 +195,7 @@ uni <- function(pairs)
 	unipair
 }
 
-write_result1 <- function(query, target, label, model, result, filename="result.txt")
+.net_align.write_result <- function(query, target, label, model, result, filename="result.txt")
 {
 	query.name <- query$node
 	label.name <- c(label$node, "gap")
@@ -238,7 +238,7 @@ write_result1 <- function(query, target, label, model, result, filename="result.
 	# query --> target; target --> query
 	
 	pairs1 <- cbind(query.name,label.name[result])
-	x1table <- uni(pairs1)
+	x1table <- .net_align.uni(pairs1)
 	x1 <- c("query-->target",dim(x1table)[1])
 	ftable <- rbind(x1,x1table)
 	utils::write.table(ftable,paste("list",filename),row.names=FALSE,col.names=FALSE,quote=FALSE)
