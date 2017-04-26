@@ -45,8 +45,8 @@ echo $contents; } ?>
 
 <p> <strong>Homepage:</strong> <a href="https://github.com/wulingyun/Corbi">https://github.com/wulingyun/Corbi</a>. </p>
 
-<p> <strong>Stable version:</strong> <a href="https://cran.r-project.org/web/packages/Corbi/">CRAN</a>, 
-<a href="http://r-forge.r-project.org/projects/corbi/">R-Forge</a>. </p>
+<p> <strong>Stable version:</strong> <a href="https://CRAN.R-project.org/package=Corbi">CRAN</a>, 
+<a href="http://R-Forge.R-project.org/projects/corbi/">R-Forge</a>. </p>
 
 <p> <strong>Latest beta version:</strong> <a href="https://github.com/wulingyun/Corbi">GitHub</a>. </p>
 
