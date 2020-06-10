@@ -31,9 +31,14 @@ Biomarker identification:
   \item \code{\link{markrank}} Biomarker identification and prioritization by integrating gene expression with biomolecular network
 }
 
-Differential expressed gene identification:
+Differential expression analysis:
 \itemize{
-  \item \code{\link{netDEG}} Differential expressed gene identification by individual networks
+  \item \code{\link{netDEG}} Sample specific differential expression analysis
+}
+
+Data normalization:
+\itemize{
+  \item \code{\link{URG_getFactor}} Gene expression data normalization by the uniform ratio graph method
 }
 }
 \references{
@@ -49,5 +54,8 @@ Duanchen Sun, Xianwen Ren, Eszter Ari, Tamas Korcsmaros,
 Peter Csermely, and Ling-Yun Wu. Discovering cooperative biomarkers for 
 heterogeneous complex disease diagnoses. Briefings in Bioinformatics, 
 20(1), 89–101, 2019.
+
+Xinhan Ye, Ling-Yun Wu. URG: a new normalization method for 
+gene expression data based on graph model. Manuscript.
 }
 \keyword{package}

@@ -1,5 +1,4 @@
 #include "Corbi.h"
-#include <Rmath.h>
 
 SEXP ND_RatioDistribution(SEXP _LogExprMatrix, SEXP _pEdge)
 {
@@ -55,6 +54,114 @@ SEXP ND_RatioDistribution(SEXP _LogExprMatrix, SEXP _pEdge)
   SetListElement(_ratio, 1, "p.edge", _pEdge);
   
   UNPROTECT(4);
+  return(_ratio);
+}
+
+SEXP ND_RatioDistributionParI(SEXP _LogExprMatrix, SEXP _pEdge, SEXP _I)
+{
+  PROTECT(_LogExprMatrix = AS_NUMERIC(_LogExprMatrix));
+  double *LogExprMatrix = NUMERIC_POINTER(_LogExprMatrix);
+  int *dim = INTEGER_POINTER(AS_INTEGER(GET_DIM(_LogExprMatrix)));
+  int nGenes = dim[0];
+  int nSamples = dim[1];
+
+  PROTECT(_pEdge = AS_NUMERIC(_pEdge));
+  double pEdge = NUMERIC_POINTER(_pEdge)[0];
+
+  PROTECT(_I = AS_INTEGER(_I));
+  int I = INTEGER_POINTER(_I)[0];
+    
+  if (pEdge > 1) pEdge = 1;
+  else if (pEdge < 0) pEdge = 0;
+  double p = pEdge / 2;
+  
+  int nLB = nGenes - I;
+  SEXP _LB;
+  PROTECT(_LB = NEW_NUMERIC(nGenes * 2));
+  SetDim2(_LB, nGenes, 2);
+  double *LB = NUMERIC_POINTER(_LB);
+  SetValues(_LB, LB, R_NegInf);
+
+  double *r = (double *) R_alloc(nSamples, sizeof(double));
+  double *e, m;
+  int n;
+
+  int II[2], KK;
+  II[0] = I - 1;
+  II[1] = nGenes - I - 1;
+  if (II[0] < II[1]) KK = 2;
+  else KK = 1;
+  
+  for (int ii = 0; ii < KK; ii++)
+  {
+    int i = II[ii];
+    for (int j = i+1; j < nGenes; j++)
+    {
+      e = LogExprMatrix;
+      n = 0;
+      for (int k = 0; k < nSamples; k++)
+      {
+        if (R_finite(e[i]) && R_finite(e[j]))
+          r[n++] = e[i] - e[j];
+        e += nGenes;
+      }
+  
+      if (n > 0)
+      {
+        m = quantile(r, n, p, false);
+        LB[j-i-1 + nLB*ii] = m;
+  
+        m = quantile(r, n, 1-p, true);
+        LB[j-i-1 + nLB*ii + nGenes] = -m;
+      }
+    }
+  }
+
+  UNPROTECT(4);
+  return(_LB);
+}
+
+SEXP ND_RatioDistributionParM(SEXP _DistI, SEXP _nGenes)
+{
+  PROTECT(_nGenes = AS_INTEGER(_nGenes));
+  int nGenes = INTEGER_POINTER(_nGenes)[0];
+
+  SEXP _LB;
+  PROTECT(_LB = NEW_NUMERIC(nGenes * nGenes));
+  SetDim2(_LB, nGenes, nGenes);
+  double *LB = NUMERIC_POINTER(_LB);
+  SetValues(_LB, LB, R_NegInf);
+
+  for (int I = 0; I < (nGenes/2); I++)
+  {
+    SEXP _M;
+    PROTECT(_M = AS_NUMERIC(GetListElement(_DistI, I)));
+    double *m = NUMERIC_POINTER(_M);
+    
+    int II[2], KK, nLB;
+    II[0] = I;
+    II[1] = nGenes - I - 2;
+    if (II[0] < II[1]) KK = 2;
+    else KK = 1;
+    nLB = nGenes - I - 1;
+  
+    for (int ii = 0; ii < KK; ii++)
+    {
+      int i = II[ii];
+      for (int j = i+1; j < nGenes; j++)
+      {
+        LB[i+nGenes*j] = m[j-i-1 + nLB*ii];
+        LB[j+nGenes*i] = m[j-i-1 + nLB*ii + nGenes];
+      }
+    }
+    UNPROTECT(1);
+  }
+
+  SEXP _ratio;
+  PROTECT(_ratio = NEW_LIST(1));
+  SetListElement(_ratio, 0, "LB", _LB);
+
+  UNPROTECT(3);
   return(_ratio);
 }
 
@@ -202,4 +309,53 @@ SEXP ND_DiffRatioNet(SEXP _RatioLB, SEXP _LogExprVal)
 
   UNPROTECT(5);
   return(_M);
+}
+
+SEXP ND_RatioVariance(SEXP _LogExprMatrix)
+{
+  PROTECT(_LogExprMatrix = AS_NUMERIC(_LogExprMatrix));
+  double *LogExprMatrix = NUMERIC_POINTER(_LogExprMatrix);
+  int *dim = INTEGER_POINTER(AS_INTEGER(GET_DIM(_LogExprMatrix)));
+  int nGenes = dim[0];
+  int nSamples = dim[1];
+
+  SEXP _Var;
+  PROTECT(_Var = NEW_NUMERIC(nGenes * nGenes));
+  SetDim2(_Var, nGenes, nGenes);
+  double *Var = NUMERIC_POINTER(_Var);
+  SetValues(_Var, Var, 0.0);
+  
+  double *r = (double *) R_alloc(nSamples, sizeof(double));
+  double *e, m, v;
+  int n;
+  for (int i = 0; i < nGenes-1; i++)
+  {
+    for (int j = i+1; j < nGenes; j++)
+    {
+      e = LogExprMatrix;
+      n = 0;
+      m = v = 0;
+      for (int k = 0; k < nSamples; k++)
+      {
+        if (R_finite(e[i]) && R_finite(e[j]))
+        {
+          r[n] = e[i] - e[j];
+          m += r[n];
+          v += r[n] * r[n];
+          n++;
+        }
+        e += nGenes;
+      }
+      
+      if (n > 0)
+      {
+        v = (v - m * m / n)  / (n - 1);
+        Var[i+nGenes*j] = v;
+        Var[j+nGenes*i] = v;
+      }
+    }
+  }
+
+  UNPROTECT(2);
+  return(_Var);
 }

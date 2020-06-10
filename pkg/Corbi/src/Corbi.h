@@ -1,6 +1,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
+#include <Rmath.h>
 #include "misc.h"
 #include "utils.h"
 #include "quantile.h"
@@ -25,6 +26,9 @@ extern "C" {
   SEXP BS_ExtendSubnets(SEXP _Sub1, SEXP _Sub2, SEXP _size);
   
   SEXP ND_RatioDistribution(SEXP _LogExprMatrix, SEXP _pEdge);
+  SEXP ND_RatioDistributionParI(SEXP _LogExprMatrix, SEXP _pEdge, SEXP _I);
+  SEXP ND_RatioDistributionParM(SEXP _DistI, SEXP _nGenes);
   SEXP ND_RatioDistribution2(SEXP _LogExprMatrix, SEXP _pEdge, SEXP _pTrim);
   SEXP ND_DiffRatioNet(SEXP _RatioLB, SEXP _LogExprVal);
+  SEXP ND_RatioVariance(SEXP _LogExprMatrix);
 }
